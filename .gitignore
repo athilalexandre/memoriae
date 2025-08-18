@@ -4,13 +4,14 @@
 /node_modules
 /.pnp
 .pnp.js
+.yarn/install-state.gz
 
 # testing
 /coverage
 
-# next.js build output
-.next/
-out/
+# next.js
+/.next/
+/out/
 
 # production
 /build
@@ -23,31 +24,22 @@ out/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
 
 # local env files
 .env*.local
-.env
 
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
-
-# local development
-# Ignora a pasta de uploads que você usa para imagens de teste
-public/uploads/
-
-# logs and temporary files
-*.trace
-*.gz
+next-env.d.ts
 
 # Firebase
 .firebase/
 firebase-debug.log
-firestore-debug.log
-ui-debug.log
+firebase-debug.*.log
+.firebaserc
 
 # IDE
 .vscode/
@@ -57,3 +49,9 @@ ui-debug.log
 
 # OS
 Thumbs.db
+.DS_Store
+
+# Photos and data
+/data/photos/
+/data/
+/public/uploads/

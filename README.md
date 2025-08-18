@@ -1,172 +1,177 @@
 # Memoriae
 
-A beautiful and modern web application for creating and sharing memorable experiences with photos, messages, and music.
+Uma aplicação web moderna e bonita para criar e compartilhar experiências memoráveis com fotos, mensagens e música.
 
 ## ✨ Features
 
-- 📸 Photo gallery with smooth transitions
-- ✍️ Custom message display
-- 🎵 Background music support
-- 🎨 Multiple layout options
-- 🔒 Secure admin authentication
-- 🚀 Fast and modern tech stack
-- 💾 Local storage for data persistence
+- 🎵 Suporte a música de fundo (YouTube, Spotify, etc.)
+- 🎨 Múltiplas opções de layout
+- 📸 Upload de fotos com preview
+- 💾 Armazenamento local para persistência de dados
+- 🚀 Interface moderna e responsiva
+- ⚡ Acesso direto à criação de experiências
 
 ## 🛠️ Tech Stack
 
-- **Next.js 14** - React framework
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-- **Framer Motion** - Animations
-- **React Dropzone** - File uploads
-- **Local File System** - Data storage
+- **Next.js 14** - Framework React
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS** - Estilização
+- **Framer Motion** - Animações
+- **React Dropzone** - Upload de arquivos
+- **Sistema de Arquivos Local** - Armazenamento de dados
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### Pré-requisitos
 
 - Node.js 18+ 
-- npm or yarn
+- npm ou yarn
 
-### Installation
+### Instalação
 
-1. **Clone the repository**
+1. **Clone o repositório**
    ```bash
    git clone https://github.com/athilalexandre/memoriae.git
    cd memoriae
    ```
 
-2. **Install dependencies**
+2. **Instale as dependências**
    ```bash
    npm install
    ```
 
-3. **Start the development server**
+3. **Inicie o servidor de desenvolvimento**
    ```bash
    npm run dev
    ```
 
-4. **Open your browser**
-   Navigate to `http://localhost:3000`
+4. **Abra seu navegador**
+   Navegue para `http://localhost:3000`
 
-## 📝 Usage
+## 📝 Como Usar
 
-### Admin Access
+### Criando Experiências
 
-1. Go to `/admin/login`
-2. Use the default credentials:
-   - **Email:** `admin@memoriae.com`
-   - **Password:** `admin123`
+1. **Acesse a página inicial**
+   - Vá para `http://localhost:3000`
+   - Clique em "Entrar"
 
-### Creating Experiences
+2. **Preencha os detalhes da experiência:**
+   - **Título** - Nome da experiência
+   - **Mensagem** - Texto personalizado (até 1000 caracteres)
+   - **URL da Música** - Link do YouTube, Spotify, etc.
+   - **Fotos** - Arraste e solte ou clique para selecionar
+   - **Layout** - Escolha entre Grid, Masonry, Carousel ou Stack
 
-1. Login to the admin panel
-2. Fill in the experience details:
-   - Title
-   - Message
-   - Music URL (YouTube, Spotify, etc.)
-   - Upload photos
-   - Choose layout
-3. Click "Create Experience"
-4. Share the generated link
+3. **Clique em "Criar Experiência"**
+4. **Compartilhe o link gerado**
 
-## 📁 Project Structure
+### Visualizando Experiências
+
+- Acesse o link gerado
+- A experiência será exibida automaticamente
+- A música começará a tocar (se configurada)
+- As fotos serão exibidas no layout escolhido
+
+## 📁 Estrutura do Projeto
 
 ```
 memoriae/
 ├── app/                    # Next.js App Router
-│   ├── admin/             # Admin pages
-│   ├── api/               # API routes
-│   └── experience/        # Experience display pages
-├── lib/                   # Utility functions
-│   ├── auth.ts           # Authentication
-│   ├── session.ts        # Session management
-│   └── storage.ts        # Local file storage
-├── public/               # Static assets
-└── styles/               # Global styles
+│   ├── admin/             # Páginas administrativas
+│   ├── api/               # Rotas da API
+│   └── experience/        # Páginas de exibição de experiências
+├── lib/                   # Funções utilitárias
+│   ├── auth.ts           # Sistema de autenticação simples
+│   ├── session.ts        # Gerenciamento de sessão
+│   └── storage.ts        # Armazenamento local de arquivos
+├── public/               # Assets estáticos
+└── styles/               # Estilos globais
 ```
 
-## 🔧 Configuration
+## 🔧 Configuração
 
-### Environment Variables
+### Variáveis de Ambiente
 
-Create a `.env.local` file in the root directory:
+Crie um arquivo `.env.local` na raiz do projeto:
 
 ```env
-# App Configuration
+# Configuração da Aplicação
 STORAGE_MODE=local
 MAX_UPLOAD_MB=5
 
-# Development Settings
+# Configurações de Desenvolvimento
 NODE_ENV=development
 ```
 
-### Customizing Admin Credentials
+### Personalizando Credenciais de Admin (Opcional)
 
-Edit `lib/auth.ts` to change the default admin credentials:
+Edite `lib/auth.ts` para alterar as credenciais padrão:
 
 ```typescript
 const ADMIN_CREDENTIALS = {
-  email: 'your-email@example.com',
-  password: 'your-password'
+  email: 'seu-email@exemplo.com',
+  password: 'sua-senha'
 };
 ```
 
-## 📸 Photo Upload
+## 📸 Upload de Fotos
 
-- **Supported formats:** JPEG, PNG, GIF, WebP
-- **Maximum size:** 5MB per photo
-- **Storage:** Local file system
+- **Formatos suportados:** JPEG, PNG, GIF, WebP
+- **Tamanho máximo:** 5MB por foto
+- **Armazenamento:** Sistema de arquivos local
 
-## 🎵 Music Support
+## 🎵 Suporte a Música
 
-- **YouTube URLs** - Full support
-- **Spotify URLs** - Basic support
-- **Other platforms** - May work depending on embed support
+- **URLs do YouTube** - Suporte completo
+- **URLs do Spotify** - Suporte básico
+- **Outras plataformas** - Podem funcionar dependendo do suporte de embed
 
-## 🎨 Layouts
+## 🎨 Layouts Disponíveis
 
-- **Grid** - Photos in a grid format
-- **Masonry** - Pinterest-style layout
-- **Carousel** - Horizontal scrolling
-- **Stack** - Vertical stacking
+- **Grid** - Fotos em formato de grade
+- **Masonry** - Layout estilo Pinterest
+- **Carousel** - Rolagem horizontal
+- **Stack** - Empilhamento vertical
 
-## 🚀 Deployment
+## 🚀 Deploy
 
-### Vercel (Recommended)
+### Vercel (Recomendado)
 
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Deploy automatically
+1. Faça push do código para GitHub
+2. Conecte seu repositório ao Vercel
+3. Deploy automático
 
-### Other Platforms
+### Outras Plataformas
 
-1. Build the project: `npm run build`
-2. Start production server: `npm start`
-3. Deploy the `.next` folder
+1. Build do projeto: `npm run build`
+2. Inicie o servidor de produção: `npm start`
+3. Deploy da pasta `.next`
 
-## 🔒 Security
+## 🔒 Segurança
 
-- Session-based authentication
-- File upload validation
-- Input sanitization
-- Secure headers
+- Autenticação baseada em sessão
+- Validação de uploads de arquivos
+- Sanitização de inputs
+- Headers de segurança
 
-## 📄 License
+## 📄 Licença
 
-This project is licensed under the MIT License.
+Este projeto está licenciado sob a Licença MIT.
 
-## 🤝 Contributing
+## 🤝 Contribuindo
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+1. Faça um fork do repositório
+2. Crie uma branch para sua feature
+3. Faça suas alterações
+4. Envie um pull request
 
-## 📞 Support
+## 📞 Suporte
 
-If you have any questions or need help, please open an issue on GitHub.
+Se você tiver dúvidas ou precisar de ajuda, abra uma issue no GitHub.
 
 ---
 
-Made with ❤️ by [Athila Alexandre](https://github.com/athilalexandre)
+Feito com ❤️ por [Athila Alexandre](https://github.com/athilalexandre)
+
+Inspirado no projeto [BioLove](https://github.com/Crawfordcorp/BioLove) de [David Aleixo](https://github.com/Crawfordcorp)

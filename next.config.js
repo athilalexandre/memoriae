@@ -1,7 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    appDir: true,
+  },
   images: {
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+        port: '',
+        pathname: '/**',
+      },
       {
         protocol: 'https',
         hostname: 'img.youtube.com',
@@ -10,46 +19,34 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'i.ytimg.com',
+        hostname: 'open.spotifycdn.com',
         port: '',
         pathname: '/**',
       },
     ],
   },
   webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        net: false,
-        fs: false,
-        url: false,
-        zlib: false
-      };
+    // Exclude data folder from serverless functions
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push({
+        'fs': 'fs',
+        'path': 'path',
+      });
     }
+    
     return config;
   },
-  // Security headers
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
-        ],
-      },
-    ];
+  // Exclude data folder from build
+  experimental: {
+    ...nextConfig.experimental,
+    outputFileTracingExcludes: {
+      '*': [
+        'data/**/*',
+        'public/uploads/**/*',
+      ],
+    },
   },
-}
+};
 
-module.exports = nextConfig 
+module.exports = nextConfig; 

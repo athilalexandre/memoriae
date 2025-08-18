@@ -9,5 +9,11 @@
     "app/api/**/*.ts": {
       "maxDuration": 30
     }
+  },
+  "ignoreCommand": "echo 'Skipping build step'",
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
   }
 }
