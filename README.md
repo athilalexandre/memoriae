@@ -106,16 +106,16 @@ npm install
 3. Create a `.env.local` file in the root directory with your Firebase configuration:
 ```env
 # Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyC2NHAT_iucz20joEF7JSI_9qnQsLSlTcE
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=memoriae-9e001.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=memoriae-9e001
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=memoriae-9e001.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=931229072997
-NEXT_PUBLIC_FIREBASE_APP_ID=1:931229072997:web:1152f263103fa2f5ff108c
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 
 # Admin Credentials (Server-side only)
-ADMIN_EMAIL=athilalexandre@gmail.com
-ADMIN_PASSWORD=123456
+ADMIN_EMAIL=your_admin_email@example.com
+ADMIN_PASSWORD=your_admin_password
 
 # App Configuration
 STORAGE_MODE=firebase
