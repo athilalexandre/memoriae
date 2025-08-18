@@ -1,28 +1,22 @@
 import { createSession } from '@/lib/session';
+import { signInAdmin } from '@/lib/auth';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { user } = await request.json();
+    const { email, password } = await request.json();
 
     // Validate input
-    if (!user || !user.uid || !user.email) {
-      return NextResponse.json({ message: 'Invalid user data' }, { status: 400 });
+    if (!email || !password) {
+      return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
     }
 
-    // Check if it's an authorized admin user
-    const adminEmails = process.env.ADMIN_EMAILS?.split(',') || ['athilalexandre@gmail.com'];
+    // Sign in with simple auth
+    const user = await signInAdmin(email, password);
     
-    if (adminEmails.includes(user.email)) {
-      // Create session
-      await createSession(user.uid);
-      
-      return NextResponse.json({ message: 'Login successful' });
-    } else {
-      return NextResponse.json({ message: 'Unauthorized access' }, { status: 403 });
-    }
+    return NextResponse.json({ message: 'Login successful', user });
   } catch (error: any) {
     console.error('Login error:', error);
-    return NextResponse.json({ message: 'Authentication failed' }, { status: 401 });
+    return NextResponse.json({ message: error.message || 'Invalid credentials' }, { status: 401 });
   }
 } 

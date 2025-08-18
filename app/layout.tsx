@@ -15,7 +15,7 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: 'Memoriae',
-  description: 'Personalized Digital Experiences',
+  description: 'Create beautiful memories with photos, music, and love',
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
-      <body className={`${inter.variable} ${playfair.variable} font-sans overflow-x-hidden`} style={{ backgroundColor: 'white !important' }}>
+      <body className={`${inter.variable} ${playfair.variable} font-sans overflow-x-hidden`}>
         <Providers>{children}</Providers>
       </body>
     </html>

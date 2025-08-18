@@ -1,205 +1,172 @@
-# Memoriae - Personalized Digital Experiences
+# Memoriae
 
-A modern web platform for creating and sharing personalized digital experiences through beautiful, interactive landing pages.
+A beautiful and modern web application for creating and sharing memorable experiences with photos, messages, and music.
 
-## Features
+## ✨ Features
 
-- 🎨 Beautiful, responsive design
-- 🖼️ Multiple interactive layouts
-- 🎵 Music integration (Spotify/YouTube)
 - 📸 Photo gallery with smooth transitions
 - ✍️ Custom message display
-- 🔒 Secure admin authentication with Firebase
+- 🎵 Background music support
+- 🎨 Multiple layout options
+- 🔒 Secure admin authentication
 - 🚀 Fast and modern tech stack
-- ☁️ Cloud storage with Firebase
+- 💾 Local storage for data persistence
 
-## Layouts Available
+## 🛠️ Tech Stack
 
-Memoriae offers a variety of layouts to present your experience. Each layout has a unique visual style and optimal photo requirements:
+- **Next.js 14** - React framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Framer Motion** - Animations
+- **React Dropzone** - File uploads
+- **Local File System** - Data storage
 
--   **Default Layout**: A standard layout featuring a main photo in prominence and the message below, with subtle background photos. Requires 1-10 main photos and 1-10 background photos.
--   **Full Screen Photo Layout**: Displays a single full-screen photo as the background, with elegant, overlaid text. Requires exactly 1 main photo (no additional background photos are used).
--   **Centered Message Layout**: Focuses the message and a carousel of smaller, rotating photos in the center, with smoothly moving background photos. Ideal for a central focus. Requires 1-5 main photos and 1-10 background photos.
--   **Split Screen Layout**: Divides the screen horizontally to display photos on one side and the message on the other, creating a dynamic and modern interaction. Requires 1-10 main photos and 1-10 background photos.
--   **Vertical Timeline Layout**: Organizes photos and message snippets in a vertical timeline, perfect for sequential narratives or progressive stories. Requires 1-20 main photos (tied to sentences) and 1-10 background photos.
--   **Photo Grid Message Layout**: Presents a dynamic grid of photos that animate, with the message integrated or highlighted below the grid. Great for showcasing multiple moments. Requires 3-9 main photos and 1-10 background photos.
+## 🚀 Getting Started
 
-## Photo Uploads
+### Prerequisites
 
-When creating an experience, photo upload fields will dynamically appear based on the chosen layout's requirements. Each uploaded file has a maximum size limit of 5MB, and supported formats are JPEG, PNG, and WebP.
+- Node.js 18+ 
+- npm or yarn
 
-## Tech Stack
+### Installation
 
-- Next.js 14
-- TypeScript
-- Tailwind CSS
-- Firebase (Authentication, Firestore, Storage)
-- Framer Motion
-- React Player
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/athilalexandre/memoriae.git
+   cd memoriae
+   ```
 
-## Prerequisites
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-- Node.js 18+ and npm
-- Firebase account
-- Environment variables configured
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
 
-## Firebase Setup
+4. **Open your browser**
+   Navigate to `http://localhost:3000`
 
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project or select your existing project
-3. Enable the following services:
-   - **Authentication**: Enable Email/Password authentication
-   - **Firestore Database**: Create a database in production mode
-   - **Storage**: Create a storage bucket
-
-### Authentication Setup
-
-1. In Firebase Console, go to Authentication > Users
-2. Add a new user with your admin email and password
-3. This will be used for admin login
-
-### Firestore Rules
-
-Set up Firestore security rules:
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /experiences/{experienceId} {
-      allow read: allow true;
-      allow write: if request.auth != null;
-    }
-  }
-}
-```
-
-### Storage Rules
-
-Set up Storage security rules:
-
-```javascript
-rules_version = '2';
-service firebase.storage {
-  match /b/{bucket}/o {
-    match /photos/{allPaths=**} {
-      allow read: allow true;
-      allow write: if request.auth != null && request.resource.size < 5 * 1024 * 1024;
-    }
-  }
-}
-```
-
-## Setup
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/memoriae.git
-cd memoriae
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Create a `.env.local` file in the root directory with your Firebase configuration:
-```env
-# Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-
-# Admin Credentials (Server-side only)
-ADMIN_EMAIL=your_admin_email@example.com
-ADMIN_PASSWORD=your_admin_password
-
-# App Configuration
-STORAGE_MODE=firebase
-MAX_UPLOAD_MB=5
-```
-
-4. Get your Firebase configuration:
-   - Go to Project Settings > General
-   - Scroll down to "Your apps" section
-   - Click on the web app or create a new one
-   - Copy the configuration values
-
-5. Run the development server:
-```bash
-npm run dev
-```
-
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Usage
+## 📝 Usage
 
 ### Admin Access
 
-1. Navigate to `/admin/login`
-2. Log in with your admin credentials (configured in Firebase Authentication)
-3. Create new experiences by uploading photos, adding music, writing messages, and selecting a layout.
+1. Go to `/admin/login`
+2. Use the default credentials:
+   - **Email:** `admin@memoriae.com`
+   - **Password:** `admin123`
 
-#### Changing Admin Credentials
+### Creating Experiences
 
-Admin login and password are managed through Firebase Authentication. To change credentials:
+1. Login to the admin panel
+2. Fill in the experience details:
+   - Title
+   - Message
+   - Music URL (YouTube, Spotify, etc.)
+   - Upload photos
+   - Choose layout
+3. Click "Create Experience"
+4. Share the generated link
 
-1. Go to your [Firebase Console](https://console.firebase.google.com/).
-2. Select your project.
-3. In the left-hand menu, navigate to "Authentication" under the "Build" section.
-4. Go to the "Users" tab.
-5. Here you can add new users, delete existing ones, or change passwords for existing users (by clicking on the user and then "reset password").
+## 📁 Project Structure
 
-### Experience Viewing
+```
+memoriae/
+├── app/                    # Next.js App Router
+│   ├── admin/             # Admin pages
+│   ├── api/               # API routes
+│   └── experience/        # Experience display pages
+├── lib/                   # Utility functions
+│   ├── auth.ts           # Authentication
+│   ├── session.ts        # Session management
+│   └── storage.ts        # Local file storage
+├── public/               # Static assets
+└── styles/               # Global styles
+```
 
-1. Share the generated experience URL
-2. The experience page will automatically play music and display photos with the custom message
+## 🔧 Configuration
 
-## Development
+### Environment Variables
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run format` - Format code with Prettier
-- `npm run format:check` - Check code formatting
+Create a `.env.local` file in the root directory:
 
-## Deployment
+```env
+# App Configuration
+STORAGE_MODE=local
+MAX_UPLOAD_MB=5
+
+# Development Settings
+NODE_ENV=development
+```
+
+### Customizing Admin Credentials
+
+Edit `lib/auth.ts` to change the default admin credentials:
+
+```typescript
+const ADMIN_CREDENTIALS = {
+  email: 'your-email@example.com',
+  password: 'your-password'
+};
+```
+
+## 📸 Photo Upload
+
+- **Supported formats:** JPEG, PNG, GIF, WebP
+- **Maximum size:** 5MB per photo
+- **Storage:** Local file system
+
+## 🎵 Music Support
+
+- **YouTube URLs** - Full support
+- **Spotify URLs** - Basic support
+- **Other platforms** - May work depending on embed support
+
+## 🎨 Layouts
+
+- **Grid** - Photos in a grid format
+- **Masonry** - Pinterest-style layout
+- **Carousel** - Horizontal scrolling
+- **Stack** - Vertical stacking
+
+## 🚀 Deployment
 
 ### Vercel (Recommended)
 
 1. Push your code to GitHub
 2. Connect your repository to Vercel
-3. Add your environment variables in Vercel dashboard
-4. Deploy
+3. Deploy automatically
 
 ### Other Platforms
 
-Make sure to:
-1. Set all environment variables
-2. Configure Firebase project for production
-3. Update Firestore and Storage rules for production
+1. Build the project: `npm run build`
+2. Start production server: `npm start`
+3. Deploy the `.next` folder
 
-## Security Features
+## 🔒 Security
 
-- Server-side authentication validation
-- File upload validation (size and type)
-- Secure session management
-- CSRF protection
-- Security headers
-- Rate limiting on sensitive endpoints
+- Session-based authentication
+- File upload validation
+- Input sanitization
+- Secure headers
 
-## Contributing
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-## License
+## 📞 Support
 
-This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0). See the [LICENSE](LICENSE) file for details.
+If you have any questions or need help, please open an issue on GitHub.
+
+---
+
+Made with ❤️ by [Athila Alexandre](https://github.com/athilalexandre)

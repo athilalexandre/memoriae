@@ -3,362 +3,238 @@
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
-import { signOutUser } from '@/lib/firebase';
 
 const layoutConfigs = {
-  empty_selection: {
-    name: "Selecione um Layout",
-    description: "Por favor, selecione um layout para ver as opções de upload de fotos.",
-    usesMainPhotos: false,
-    usesBackgroundPhotos: false,
-    minMainPhotos: 0,
-    maxMainPhotos: 0,
-    minBackgroundPhotos: 0,
-    maxBackgroundPhotos: 0,
+  'grid': {
+    name: 'Grid Layout',
+    description: 'Photos in a grid format',
+    className: 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'
   },
-  default: {
-    name: "Default Layout",
-    description: "Um layout padrão que exibe uma foto principal em destaque e a mensagem abaixo, com fotos de fundo sutis.",
-    usesMainPhotos: true,
-    usesBackgroundPhotos: true,
-    minMainPhotos: 1,
-    maxMainPhotos: 10,
-    minBackgroundPhotos: 1,
-    maxBackgroundPhotos: 10,
+  'masonry': {
+    name: 'Masonry Layout',
+    description: 'Photos in a masonry/pinterest style',
+    className: 'columns-2 md:columns-3 lg:columns-4 gap-4'
   },
-  full_screen_photo: {
-    name: "Full Screen Photo Layout",
-    description: "Exibe uma única foto em tela cheia como plano de fundo, com o texto sobreposto e elegante. Não utiliza fotos de fundo adicionais.",
-    usesMainPhotos: true,
-    usesBackgroundPhotos: false,
-    minMainPhotos: 1,
-    maxMainPhotos: 1,
-    minBackgroundPhotos: 0,
-    maxBackgroundPhotos: 0,
+  'carousel': {
+    name: 'Carousel Layout',
+    description: 'Photos in a horizontal carousel',
+    className: 'flex overflow-x-auto gap-4 snap-x snap-mandatory'
   },
-  centered_message: {
-    name: "Centered Message Layout",
-    description: "Foca a mensagem e um carrossel de fotos menores e giratórias no centro, com fotos de fundo em movimento suave. Ideal para um foco central.",
-    usesMainPhotos: true,
-    usesBackgroundPhotos: true,
-    minMainPhotos: 1,
-    maxMainPhotos: 5,
-    minBackgroundPhotos: 1,
-    maxBackgroundPhotos: 10,
-  },
-  split_screen: {
-    name: "Split Screen Layout",
-    description: "Divide a tela horizontalmente para exibir fotos de um lado e a mensagem do outro, criando uma interação dinâmica e moderna.",
-    usesMainPhotos: true,
-    usesBackgroundPhotos: true,
-    minMainPhotos: 1,
-    maxMainPhotos: 10,
-    minBackgroundPhotos: 1,
-    maxBackgroundPhotos: 10,
-  },
-  vertical_timeline: {
-    name: "Vertical Timeline Layout",
-    description: "Organiza fotos e trechos de mensagem em uma linha do tempo vertical, perfeito para narrativas sequenciais ou histórias progressivas.",
-    usesMainPhotos: true, // Photos are tied to sentences
-    usesBackgroundPhotos: true,
-    minMainPhotos: 1,
-    maxMainPhotos: 20, // Allowing up to 20 for more flexibility
-    minBackgroundPhotos: 1,
-    maxBackgroundPhotos: 10,
-  },
-  photo_grid_message: {
-    name: "Photo Grid Message Layout",
-    description: "Apresenta uma grade dinâmica de fotos que se movem, com a mensagem integrada ou em destaque abaixo da grade. Ótimo para múltiplos momentos.",
-    usesMainPhotos: true,
-    usesBackgroundPhotos: true,
-    minMainPhotos: 3,
-    maxMainPhotos: 9, // Max 9 photos for the grid as per component
-    minBackgroundPhotos: 1,
-    maxBackgroundPhotos: 10,
-  },
+  'stack': {
+    name: 'Stack Layout',
+    description: 'Photos stacked on top of each other',
+    className: 'flex flex-col gap-4'
+  }
 };
 
-type LayoutKeys = keyof typeof layoutConfigs;
-
-export default function CreateExperiencePage() {
-  const [message, setMessage] = useState('');
+export default function CreateExperience() {
   const [title, setTitle] = useState('');
+  const [message, setMessage] = useState('');
   const [musicUrl, setMusicUrl] = useState('');
   const [photos, setPhotos] = useState<File[]>([]);
-  const [backgroundPhotos, setBackgroundPhotos] = useState<File[]>([]);
+  const [layout, setLayout] = useState('grid');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [layout, setLayout] = useState<LayoutKeys>('empty_selection');
   const router = useRouter();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    setPhotos(acceptedFiles);
+    setPhotos(prev => [...prev, ...acceptedFiles]);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'image/*': [] },
-    multiple: true,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp']
+    },
+    maxSize: 5 * 1024 * 1024 // 5MB
   });
 
-  const onDropBackground = useCallback((acceptedFiles: File[]) => {
-    setBackgroundPhotos(acceptedFiles);
-  }, []);
-
-  const { getRootProps: getBackgroundRootProps, getInputProps: getBackgroundInputProps, isDragActive: isBackgroundDragActive } = useDropzone({
-    onDrop: onDropBackground,
-    accept: { 'image/*': [] },
-    multiple: true,
-  });
+  const removePhoto = (index: number) => {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const currentLayoutConfig = layoutConfigs[layout];
-
-    // Validate main photos
-    if (currentLayoutConfig.usesMainPhotos) {
-      if (photos.length < currentLayoutConfig.minMainPhotos || photos.length > currentLayoutConfig.maxMainPhotos) {
-        setError(`Para o layout '${currentLayoutConfig.name}', você deve fazer upload de ${currentLayoutConfig.minMainPhotos} a ${currentLayoutConfig.maxMainPhotos} fotos principais.`);
-        setLoading(false);
-        return;
-      }
-    } else if (photos.length > 0) {
-      setError(`O layout '${currentLayoutConfig.name}' não utiliza fotos principais.`);
-      setLoading(false);
-      return;
-    }
-
-    // Validate background photos
-    if (currentLayoutConfig.usesBackgroundPhotos) {
-      if (backgroundPhotos.length < currentLayoutConfig.minBackgroundPhotos || backgroundPhotos.length > currentLayoutConfig.maxBackgroundPhotos) {
-        setError(`Para o layout '${currentLayoutConfig.name}', você deve fazer upload de ${currentLayoutConfig.minBackgroundPhotos} a ${currentLayoutConfig.maxBackgroundPhotos} fotos de fundo.`);
-        setLoading(false);
-        return;
-      }
-    } else if (backgroundPhotos.length > 0) {
-      setError(`O layout '${currentLayoutConfig.name}' não utiliza fotos de fundo.`);
-      setLoading(false);
-      return;
-    }
-
     try {
       const formData = new FormData();
-      formData.append('message', message);
       formData.append('title', title);
+      formData.append('message', message);
       formData.append('musicUrl', musicUrl);
-      formData.append('createdBy', 'admin');
       formData.append('layout', layout);
-
-      // Only append photos if the current layout uses them
-      if (layoutConfigs[layout].usesMainPhotos) {
-        photos.forEach((photo) => {
-          formData.append('photos', photo);
-        });
-      }
-
-      if (layoutConfigs[layout].usesBackgroundPhotos) {
-        backgroundPhotos.forEach((photo) => {
-          formData.append('backgroundPhotos', photo);
-        });
-      }
+      
+      photos.forEach((photo, index) => {
+        formData.append(`photos`, photo);
+      });
 
       const response = await fetch('/api/experiences', {
         method: 'POST',
         body: formData,
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        const { id } = await response.json();
+        router.push(`/experience/${id}`);
+      } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create experience');
+        setError(errorData.message || 'Failed to create experience');
       }
-
-      const data = await response.json();
-      router.push(`/experience/${data.id}`);
     } catch (err: any) {
-      setError(err.message || 'An unknown error occurred.');
+      setError(err.message || 'An error occurred');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      // Sign out from Google
-      await signOutUser();
-      
-      // Clear server session
-      await fetch('/api/logout', {
-        method: 'POST',
-      });
-      
-      router.push('/admin/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Still redirect even if there's an error
-      router.push('/admin/login');
-    }
+  const handleExit = () => {
+    // Clear server session
+    fetch('/api/logout', {
+      method: 'POST',
+    }).catch(console.error);
+    
+    // Navigate to home page
+    router.push('/');
   };
 
-  const MAX_MESSAGE_LENGTH = 600;
-  const currentLayoutConfig = layoutConfigs[layout];
-
-  const MAX_FILE_SIZE_MB = 5; // Example: 5MB
-  const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
-
   return (
-    <div className="flex items-center justify-center">
-      <div className="bg-white p-4 rounded-lg shadow-xl w-full max-w-screen-md h-full flex flex-col overflow-y-auto overflow-x-hidden mx-auto">
-        <h1 className="text-3xl font-bold text-center text-primary-800 mb-6 flex-shrink-0">Create New Experience</h1>
-        <form onSubmit={handleSubmit} className="space-y-4 flex-grow flex flex-col overflow-x-hidden">
-          {/* Title and Music URL */}
-          <div className="flex flex-col space-y-4 flex-shrink-0">
-            <div className="flex-1">
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Create Experience</h1>
+          <button
+            onClick={handleExit}
+            className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+          >
+            Sair
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Title
+              </label>
               <input
                 type="text"
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="mt-1 block w-full min-w-0 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                placeholder="Enter a title for the experience"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                 required
               />
             </div>
 
-            <div className="flex-1">
-              <label htmlFor="musicUrl" className="block text-sm font-medium text-gray-700">Music URL (YouTube)</label>
-              <input
-                type="url"
-                id="musicUrl"
-                value={musicUrl}
-                onChange={(e) => setMusicUrl(e.target.value)}
-                className="mt-1 block w-full min-w-0 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                placeholder="Enter YouTube URL"
-                required
-              />
+            <div>
+              <label htmlFor="layout" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Layout
+              </label>
+              <select
+                id="layout"
+                value={layout}
+                onChange={(e) => setLayout(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+              >
+                {Object.entries(layoutConfigs).map(([key, config]) => (
+                  <option key={key} value={key}>
+                    {config.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
-          {/* Message */}
-          <div className="flex-shrink-0">
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message for Partner</label>
+          <div>
+            <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Message
+            </label>
             <textarea
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
-              className="mt-1 block w-full min-w-0 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-              maxLength={MAX_MESSAGE_LENGTH}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               required
-            ></textarea>
-            <p className="text-xs text-gray-500 mt-1 text-right">
-              {message.length} / {MAX_MESSAGE_LENGTH} characters
-            </p>
+            />
           </div>
 
-          {/* Choose Layout */}
-          <div className="flex-shrink-0">
-            <label htmlFor="layout" className="block text-sm font-medium text-gray-700">Choose Layout</label>
-            <select
-              id="layout"
-              value={layout}
-              onChange={(e) => setLayout(e.target.value as LayoutKeys)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-              required
+          <div>
+            <label htmlFor="musicUrl" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Music URL (YouTube, Spotify, etc.)
+            </label>
+            <input
+              type="url"
+              id="musicUrl"
+              value={musicUrl}
+              onChange={(e) => setMusicUrl(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Photos
+            </label>
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+                isDragActive
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+              }`}
             >
-              {Object.entries(layoutConfigs).map(([key, config]) => (
-                <option key={key} value={key} disabled={key === 'empty_selection' && layout !== 'empty_selection'}>
-                  {config.name}
-                </option>
-              ))}
-            </select>
-            {currentLayoutConfig && (
-              <p className="text-xs text-gray-500 mt-1">{currentLayoutConfig.description}</p>
-            )}
+              <input {...getInputProps()} />
+              <p className="text-gray-600 dark:text-gray-400">
+                {isDragActive
+                  ? 'Drop the photos here...'
+                  : 'Drag & drop photos here, or click to select files'}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+                Max 5MB per photo, JPEG, PNG, GIF, WebP
+              </p>
+            </div>
           </div>
 
-          {/* Photos Uploads Section */}
-          {(currentLayoutConfig?.usesMainPhotos || currentLayoutConfig?.usesBackgroundPhotos) && (
-            <div className="flex flex-col flex-shrink-0">
-              {currentLayoutConfig?.usesMainPhotos && (
-                <div className="flex-1 flex-shrink-0">
-                  <label className="block text-sm font-medium text-gray-700">Photos (Main)</label>
-                  <div
-                    {...getRootProps()}
-                    className="mt-1 flex justify-center p-4 border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
-                  >
-                    <input {...getInputProps()} />
-                    {isDragActive ? (
-                      <p className="text-primary-600 text-xs font-bold">Solte os arquivos aqui ...</p>
-                    ) : (
-                      <p className="text-center text-gray-500 text-xs" style={{ wordBreak: 'break-word' }}>
-                        <span className="font-bold">Arraste e solte arquivos aqui, ou clique para selecionar arquivos.</span><br /><br />
-                        <span className="text-xs">Max: {MAX_FILE_SIZE_MB}MB por arquivo. Não há limite de dimensões de imagem.</span>
-                      </p>
-                    )}
+          {photos.length > 0 && (
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">Selected Photos ({photos.length})</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {photos.map((photo, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={URL.createObjectURL(photo)}
+                      alt={`Photo ${index + 1}`}
+                      className="w-full h-24 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ×
+                    </button>
                   </div>
-                  <aside className="mt-2 text-sm text-gray-600">
-                    {photos.length > 0 ? (
-                      <p>{photos.length} file(s) selected</p>
-                    ) : (
-                      <p>No files selected.</p>
-                    )}
-                  </aside>
-                </div>
-              )}
-
-              {currentLayoutConfig?.usesBackgroundPhotos && (
-                <div className="flex-1 flex-shrink-0">
-                  <label className="block text-sm font-medium text-gray-700">Photos (Background)</label>
-                  <div
-                    {...getBackgroundRootProps()}
-                    className="mt-1 flex justify-center p-4 border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
-                  >
-                    <input {...getBackgroundInputProps()} />
-                    {isBackgroundDragActive ? (
-                      <p className="text-primary-600 text-xs font-bold">Solte os arquivos aqui ...</p>
-                    ) : (
-                      <p className="text-center text-gray-500 text-xs" style={{ wordBreak: 'break-word' }}>
-                        <span className="font-bold">Arraste e solte arquivos aqui, ou clique para selecionar arquivos.</span><br /><br />
-                        <span className="text-xs">Max: {MAX_FILE_SIZE_MB}MB por arquivo. Não há limite de dimensões de imagem.</span>
-                      </p>
-                    )}
-                  </div>
-                  <aside className="mt-2 text-sm text-gray-600">
-                    {backgroundPhotos.length > 0 ? (
-                      <p>{backgroundPhotos.length} file(s) selected</p>
-                    ) : (
-                      <p>No files selected.</p>
-                    )}
-                  </aside>
-                </div>
-              )}
+                ))}
+              </div>
             </div>
           )}
 
           {error && (
-            <p className="text-red-600 text-sm text-center">{error}</p>
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4">
+              <p className="text-red-800 dark:text-red-200">{error}</p>
+            </div>
           )}
 
-          {/* Action Buttons: Create Experience and Logout */}
-          <div className="flex flex-col md:flex-row gap-4 mt-auto pt-4 flex-shrink-0">
-            <button
-              type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 flex-1"
-              disabled={loading}
-            >
-              {loading ? 'Creating...' : 'Create Experience'}
-            </button>
-            <button
-              onClick={handleLogout}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-primary-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 flex-1"
-            >
-              Logout
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {loading ? 'Creating...' : 'Create Experience'}
+          </button>
         </form>
       </div>
     </div>

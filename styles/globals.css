@@ -10,7 +10,6 @@
 
   body {
     @apply antialiased;
-    background-color: black !important; /* Garante que o fundo seja preto, a menos que sobreposto por uma imagem */
   }
 }
 
