@@ -63,7 +63,7 @@ export default function HomePage() {
           className="mb-8"
         >
           <Link
-            href="/admin/login"
+            href="/admin/create"
             className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-full text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
           >
             <Sparkles className="w-5 h-5 mr-2" />
