@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
+import { signOutUser } from '@/lib/firebase';
 
 const layoutConfigs = {
   empty_selection: {
@@ -184,10 +185,21 @@ export default function CreateExperiencePage() {
   };
 
   const handleLogout = async () => {
-    await fetch('/api/logout', {
-      method: 'POST',
-    });
-    router.push('/admin/login');
+    try {
+      // Sign out from Google
+      await signOutUser();
+      
+      // Clear server session
+      await fetch('/api/logout', {
+        method: 'POST',
+      });
+      
+      router.push('/admin/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still redirect even if there's an error
+      router.push('/admin/login');
+    }
   };
 
   const MAX_MESSAGE_LENGTH = 600;

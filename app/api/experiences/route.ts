@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createExperience, uploadPhoto } from '@/lib/firebase';
+import { createExperience, uploadPhoto } from '@/lib/storage';
 import { requireAuth } from '@/lib/session';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Create experience in Firestore
+    // Create experience in local storage
     const experienceId = await createExperience({
       message,
       title,

@@ -1,30 +1,25 @@
 import { createSession } from '@/lib/session';
-import { signInAdmin } from '@/lib/firebase';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    const { user } = await request.json();
 
     // Validate input
-    if (!email || !password) {
-      return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
+    if (!user || !user.uid || !user.email) {
+      return NextResponse.json({ message: 'Invalid user data' }, { status: 400 });
     }
 
-    // Check if it's the admin user
-    const adminEmail = process.env.ADMIN_EMAIL;
-    const adminPassword = process.env.ADMIN_PASSWORD;
-
-    if (email === adminEmail && password === adminPassword) {
-      // Sign in with Firebase
-      const user = await signInAdmin(email, password);
-      
+    // Check if it's an authorized admin user
+    const adminEmails = process.env.ADMIN_EMAILS?.split(',') || ['athilalexandre@gmail.com'];
+    
+    if (adminEmails.includes(user.email)) {
       // Create session
       await createSession(user.uid);
       
       return NextResponse.json({ message: 'Login successful' });
     } else {
-      return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
+      return NextResponse.json({ message: 'Unauthorized access' }, { status: 403 });
     }
   } catch (error: any) {
     console.error('Login error:', error);

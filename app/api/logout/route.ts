@@ -1,12 +1,8 @@
 import { deleteSession } from '@/lib/session';
-import { signOutAdmin } from '@/lib/firebase';
 import { NextResponse } from 'next/server';
 
 export async function POST() {
   try {
-    // Sign out from Firebase
-    await signOutAdmin();
-    
     // Delete session
     await deleteSession();
     
