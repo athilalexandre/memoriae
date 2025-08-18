@@ -1,15 +1,4 @@
 {
-  "/_not-found": "app/_not-found.js",
-  "/admin/create/page": "app/admin/create/page.js",
-  "/admin/login/page": "app/admin/login/page.js",
-  "/api/experiences/route": "app/api/experiences/route.js",
-  "/api/logout/route": "app/api/logout/route.js",
-  "/api/login/route": "app/api/login/route.js",
-  "/api/experiences/[id]/video/route": "app/api/experiences/[id]/video/route.js",
-  "/api/photos/[filename]/route": "app/api/photos/[filename]/route.js",
-  "/api/experiences/[id]/route": "app/api/experiences/[id]/route.js",
   "/page": "app/page.js",
-  "/robots.txt/route": "app/robots.txt/route.js",
-  "/sitemap.xml/route": "app/sitemap.xml/route.js",
-  "/experience/[id]/page": "app/experience/[id]/page.js"
+  "/admin/login/page": "app/admin/login/page.js"
 }
