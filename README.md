@@ -9,8 +9,9 @@ A modern web platform for creating and sharing personalized digital experiences 
 - 🎵 Music integration (Spotify/YouTube)
 - 📸 Photo gallery with smooth transitions
 - ✍️ Custom message display
-- 🔒 Secure admin authentication
+- 🔒 Secure admin authentication with Firebase
 - 🚀 Fast and modern tech stack
+- ☁️ Cloud storage with Firebase
 
 ## Layouts Available
 
@@ -19,13 +20,13 @@ Memoriae offers a variety of layouts to present your experience. Each layout has
 -   **Default Layout**: A standard layout featuring a main photo in prominence and the message below, with subtle background photos. Requires 1-10 main photos and 1-10 background photos.
 -   **Full Screen Photo Layout**: Displays a single full-screen photo as the background, with elegant, overlaid text. Requires exactly 1 main photo (no additional background photos are used).
 -   **Centered Message Layout**: Focuses the message and a carousel of smaller, rotating photos in the center, with smoothly moving background photos. Ideal for a central focus. Requires 1-5 main photos and 1-10 background photos.
--   **Split Screen Layout**: Dividess the screen horizontally to display photos on one side and the message on the other, creating a dynamic and modern interaction. Requires 1-10 main photos and 1-10 background photos.
+-   **Split Screen Layout**: Divides the screen horizontally to display photos on one side and the message on the other, creating a dynamic and modern interaction. Requires 1-10 main photos and 1-10 background photos.
 -   **Vertical Timeline Layout**: Organizes photos and message snippets in a vertical timeline, perfect for sequential narratives or progressive stories. Requires 1-20 main photos (tied to sentences) and 1-10 background photos.
 -   **Photo Grid Message Layout**: Presents a dynamic grid of photos that animate, with the message integrated or highlighted below the grid. Great for showcasing multiple moments. Requires 3-9 main photos and 1-10 background photos.
 
 ## Photo Uploads
 
-When creating an experience, photo upload fields will dynamically appear based on the chosen layout's requirements. Each uploaded file has a maximum size limit of 5MB, and there are no specific image dimension limits.
+When creating an experience, photo upload fields will dynamically appear based on the chosen layout's requirements. Each uploaded file has a maximum size limit of 5MB, and supported formats are JPEG, PNG, and WebP.
 
 ## Tech Stack
 
@@ -42,6 +43,53 @@ When creating an experience, photo upload fields will dynamically appear based o
 - Firebase account
 - Environment variables configured
 
+## Firebase Setup
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project or select your existing project
+3. Enable the following services:
+   - **Authentication**: Enable Email/Password authentication
+   - **Firestore Database**: Create a database in production mode
+   - **Storage**: Create a storage bucket
+
+### Authentication Setup
+
+1. In Firebase Console, go to Authentication > Users
+2. Add a new user with your admin email and password
+3. This will be used for admin login
+
+### Firestore Rules
+
+Set up Firestore security rules:
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /experiences/{experienceId} {
+      allow read: allow true;
+      allow write: if request.auth != null;
+    }
+  }
+}
+```
+
+### Storage Rules
+
+Set up Storage security rules:
+
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /photos/{allPaths=**} {
+      allow read: allow true;
+      allow write: if request.auth != null && request.resource.size < 5 * 1024 * 1024;
+    }
+  }
+}
+```
+
 ## Setup
 
 1. Clone the repository:
@@ -57,32 +105,47 @@ npm install
 
 3. Create a `.env.local` file in the root directory with your Firebase configuration:
 ```env
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+# Firebase Configuration
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
 NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
+# Admin Credentials (Server-side only)
+ADMIN_EMAIL=your_admin_email@example.com
+ADMIN_PASSWORD=your_admin_password
+
+# App Configuration
+STORAGE_MODE=firebase
+MAX_UPLOAD_MB=5
 ```
 
-4. Run the development server:
+4. Get your Firebase configuration:
+   - Go to Project Settings > General
+   - Scroll down to "Your apps" section
+   - Click on the web app or create a new one
+   - Copy the configuration values
+
+5. Run the development server:
 ```bash
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Usage
 
 ### Admin Access
 
 1. Navigate to `/admin/login`
-2. Log in with your admin credentials
+2. Log in with your admin credentials (configured in Firebase Authentication)
 3. Create new experiences by uploading photos, adding music, writing messages, and selecting a layout.
 
 #### Changing Admin Credentials
 
-Admin login and password are managed directly through Firebase Authentication. To change credentials:
+Admin login and password are managed through Firebase Authentication. To change credentials:
 
 1. Go to your [Firebase Console](https://console.firebase.google.com/).
 2. Select your project.
@@ -101,6 +164,33 @@ Admin login and password are managed directly through Firebase Authentication. T
 - `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm run format` - Format code with Prettier
+- `npm run format:check` - Check code formatting
+
+## Deployment
+
+### Vercel (Recommended)
+
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add your environment variables in Vercel dashboard
+4. Deploy
+
+### Other Platforms
+
+Make sure to:
+1. Set all environment variables
+2. Configure Firebase project for production
+3. Update Firestore and Storage rules for production
+
+## Security Features
+
+- Server-side authentication validation
+- File upload validation (size and type)
+- Secure session management
+- CSRF protection
+- Security headers
+- Rate limiting on sensitive endpoints
 
 ## Contributing
 

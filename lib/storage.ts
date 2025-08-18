@@ -8,9 +8,6 @@ import { v4 as uuidv4 } from 'uuid';
 const DATA_DIR = path.join(process.cwd(), 'data');
 const EXPERIENCES_FILE = path.join(DATA_DIR, 'experiences.json');
 
-// Initialize experiences file if it doesn't exist
-// Moved to a function to ensure it's only called on the server
-
 // Types
 export interface Experience {
   id: string;

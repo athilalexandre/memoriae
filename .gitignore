@@ -42,3 +42,18 @@ public/uploads/
 # logs and temporary files
 *.trace
 *.gz
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db

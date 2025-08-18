@@ -1,4 +1,4 @@
-import { getExperience } from '@/lib/storage';
+import { getExperience } from '@/lib/firebase';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
@@ -12,6 +12,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     return NextResponse.json(experience);
   } catch (error: any) {
+    console.error('Error fetching experience:', error);
     return new NextResponse(error.message, { status: 500 });
   }
 } 
