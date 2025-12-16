@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createExperience, uploadPhoto } from '@/lib/storage';
-import { requireAuth } from '@/lib/session';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
@@ -8,8 +9,11 @@ const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp
 export async function POST(req: NextRequest) {
   try {
     // Check authentication
-    const session = await requireAuth();
-    
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
     const formData = await req.formData();
     const message = formData.get('message') as string;
     const title = formData.get('title') as string;
@@ -35,12 +39,12 @@ export async function POST(req: NextRequest) {
         if (photo.size > MAX_FILE_SIZE) {
           return NextResponse.json({ message: `File ${photo.name} exceeds maximum size of 5MB` }, { status: 400 });
         }
-        
+
         // Validate file type
         if (!ALLOWED_IMAGE_TYPES.includes(photo.type)) {
           return NextResponse.json({ message: `File ${photo.name} is not a valid image type` }, { status: 400 });
         }
-        
+
         const photoUrl = await uploadPhoto(photo);
         photoUrls.push(photoUrl);
       }
@@ -53,18 +57,18 @@ export async function POST(req: NextRequest) {
       musicUrl: musicUrl || '',
       photos: photoUrls,
       backgroundPhotos: [], // Not used in simplified version
-      createdBy: session || 'admin',
+      createdBy: session?.user?.email || 'admin',
       layout,
     });
 
     return NextResponse.json({ id: experienceId }, { status: 201 });
   } catch (error: any) {
     console.error('Error creating experience:', error);
-    
+
     if (error.message === 'Unauthorized') {
       return NextResponse.json({ message: 'Authentication required' }, { status: 401 });
     }
-    
+
     return NextResponse.json({ message: error.message || 'Internal server error' }, { status: 500 });
   }
 }

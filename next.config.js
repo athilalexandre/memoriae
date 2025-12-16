@@ -2,6 +2,12 @@
 const nextConfig = {
   experimental: {
     appDir: true,
+    outputFileTracingExcludes: {
+      '*': [
+        'data/**/*',
+        'public/uploads/**/*',
+      ],
+    },
   },
   images: {
     remotePatterns: [
@@ -34,19 +40,9 @@ const nextConfig = {
         'path': 'path',
       });
     }
-    
+
     return config;
-  },
-  // Exclude data folder from build
-  experimental: {
-    ...nextConfig.experimental,
-    outputFileTracingExcludes: {
-      '*': [
-        'data/**/*',
-        'public/uploads/**/*',
-      ],
-    },
   },
 };
 
-module.exports = nextConfig; 
+module.exports = nextConfig;

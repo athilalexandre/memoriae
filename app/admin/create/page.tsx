@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
+import { signOut } from 'next-auth/react';
 
 const layoutConfigs = {
   'grid': {
@@ -64,7 +65,7 @@ export default function CreateExperience() {
       formData.append('message', message);
       formData.append('musicUrl', musicUrl);
       formData.append('layout', layout);
-      
+
       photos.forEach((photo, index) => {
         formData.append(`photos`, photo);
       });
@@ -89,13 +90,7 @@ export default function CreateExperience() {
   };
 
   const handleExit = () => {
-    // Clear server session
-    fetch('/api/logout', {
-      method: 'POST',
-    }).catch(console.error);
-    
-    // Navigate to home page
-    router.push('/');
+    signOut({ callbackUrl: '/' });
   };
 
   return (
@@ -180,11 +175,10 @@ export default function CreateExperience() {
             </label>
             <div
               {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                isDragActive
-                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-              }`}
+              className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${isDragActive
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                }`}
             >
               <input {...getInputProps()} />
               <p className="text-gray-600 dark:text-gray-400">
