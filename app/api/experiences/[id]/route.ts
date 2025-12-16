@@ -1,4 +1,4 @@
-import { getExperience } from '@/lib/storage';
+import { getExperience } from '../../../../lib/storage';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {

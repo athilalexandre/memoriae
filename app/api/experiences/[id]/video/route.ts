@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getExperience } from '@/lib/storage';
+import { getExperience } from '../../../../../lib/storage';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {

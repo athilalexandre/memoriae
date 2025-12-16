@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createExperience, uploadPhoto } from '@/lib/storage';
+import { createExperience, uploadPhoto } from '../../../lib/storage';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
