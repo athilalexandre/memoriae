@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { Heart, Camera, Music, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 import ThemeToggle from './components/ThemeToggle';
-import LoginButton from './components/LoginButton';
 
 export default function HomePage() {
   return (
@@ -67,17 +67,22 @@ export default function HomePage() {
             ))}
           </motion.div>
 
-          {/* CTA Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             className="flex flex-col items-center space-y-6"
           >
-            <LoginButton />
+            <Link
+              href="/create"
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-full text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+            >
+              <Sparkles className="w-5 h-5 mr-2" />
+              Criar Nova Memória
+            </Link>
 
             <p className="text-sm text-gray-500 dark:text-gray-500">
-              Acesso restrito a administradores
+              Totalmente gratuito e sem login
             </p>
           </motion.div>
 

@@ -1,18 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createExperience, uploadPhoto } from '@/lib/storage';
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/auth";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
 
 export async function POST(req: NextRequest) {
   try {
-    // Check authentication
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
 
     const formData = await req.formData();
     const message = formData.get('message') as string;
@@ -57,7 +50,7 @@ export async function POST(req: NextRequest) {
       musicUrl: musicUrl || '',
       photos: photoUrls,
       backgroundPhotos: [], // Not used in simplified version
-      createdBy: session?.user?.email || 'admin',
+      createdBy: 'visitor',
       layout,
     });
 

@@ -3,7 +3,8 @@
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDropzone } from 'react-dropzone';
-import { signOut } from 'next-auth/react';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 const layoutConfigs = {
   'grid': {
@@ -89,21 +90,15 @@ export default function CreateExperience() {
     }
   };
 
-  const handleExit = () => {
-    signOut({ callbackUrl: '/' });
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Create Experience</h1>
-          <button
-            onClick={handleExit}
-            className="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
-          >
-            Sair
-          </button>
+          <Link href="/" className="flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 transition-colors">
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Voltar
+          </Link>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Criar Memória</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
