@@ -2,10 +2,14 @@
 
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
 
 // Define the data directory
-const DATA_DIR = path.join(process.cwd(), 'data');
+const DATA_DIR = process.env.NODE_ENV === 'production'
+  ? path.join(os.tmpdir(), 'memoriae_data')
+  : path.join(process.cwd(), 'data');
+
 const EXPERIENCES_FILE = path.join(DATA_DIR, 'experiences.json');
 
 // Types
@@ -24,7 +28,7 @@ export interface Experience {
 // Helper functions
 function readExperiences(): Experience[] {
   // Ensure initialization is done before reading
-  initializeDataDirectory(); 
+  initializeDataDirectory();
   const data = fs.readFileSync(EXPERIENCES_FILE, 'utf-8');
   return JSON.parse(data);
 }
@@ -48,16 +52,16 @@ export async function createExperience(experience: Omit<Experience, 'id' | 'crea
   initializeDataDirectory(); // Ensure initialization on first call
   const experiences = readExperiences();
   const id = uuidv4();
-  
+
   const newExperience: Experience = {
     ...experience,
     id,
     createdAt: new Date().toISOString(),
   };
-  
+
   experiences.push(newExperience);
   writeExperiences(experiences);
-  
+
   return id;
 }
 
@@ -72,16 +76,16 @@ export async function uploadPhoto(file: File): Promise<string> {
   const buffer = await file.arrayBuffer();
   const fileName = `${uuidv4()}-${file.name}`;
   const filePath = path.join(DATA_DIR, 'photos', fileName);
-  
+
   // Ensure photos directory exists
   const photosDir = path.join(DATA_DIR, 'photos');
   if (!fs.existsSync(photosDir)) {
     fs.mkdirSync(photosDir, { recursive: true });
   }
-  
+
   // Save file
   fs.writeFileSync(filePath, new Uint8Array(buffer));
-  
+
   // Return the relative path
   return `/api/photos/${fileName}`;
 } 
